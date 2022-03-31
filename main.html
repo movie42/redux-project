@@ -47,6 +47,7 @@
             event.preventDefault();
             const id = event.target.closest("li").dataset.id;
             store.dispatch({ type: "SELECT", id });
+            store.dispatch({ type: "CHANGE_MODE", mode: "READ" });
           });
       }
 
@@ -57,25 +58,62 @@
             <li><button>delete</button></li>
         </ul>
           `;
+
+        document
+          .querySelector(".control_container")
+          .addEventListener("click", (e) => {
+            e.preventDefault();
+            if (e.target.nodeName === "A") {
+              store.dispatch({ type: "CHANGE_MODE", mode: "CREATE" });
+            }
+          });
       }
 
       function article() {
         const state = store.getState();
-        const [{ title, desc }] = state.contents.filter(
-          (value) => value.id === Number(state.selected_id),
-        );
-        document.querySelector("#article").innerHTML = `
+
+        if (state.mode === "READ") {
+          const [{ title, desc }] = state.contents.filter(
+            (value) => value.id === Number(state.selected_id),
+          );
+          document.querySelector("#article").innerHTML = `
         <article>
             <h2>${title}</h2>
             ${desc}
         </article>
           `;
+        }
+
+        if (state.mode === "CREATE") {
+          document.querySelector("#article").innerHTML = `
+        <article>
+            <form class="article-form">
+                <input type="text" name="title" placeholder="제목을 입력하세요." />
+                <textarea name="desc" placeholder="본문을 입력하세요."></textarea>
+                <button>제출</button>
+            </form>
+        </article>
+          `;
+
+          document
+            .querySelector(".article-form")
+            .addEventListener("submit", (event) => {
+              event.preventDefault();
+              const [input, textarea] = event.target.children;
+              store.dispatch({
+                type: "CREATE",
+                title: input.value,
+                desc: textarea.value,
+              });
+            });
+        }
       }
 
       function reducer(state, action) {
         if (state === undefined) {
           return {
             selected_id: 1,
+            mode: "READ",
             contents: [
               { id: 1, title: "HTML", desc: "HTML is..." },
               { id: 2, title: "CSS", desc: "CSS is..." },
@@ -90,6 +128,25 @@
             selected_id: action.id,
           });
         }
+
+        if (action.type === "CHANGE_MODE") {
+          newState = Object.assign({}, state, {
+            mode: action.mode,
+          });
+        }
+
+        if (action.type === "CREATE") {
+          newState = Object.assign({}, state, {
+            contents: [
+              ...state.contents,
+              {
+                id: state.contents.length + 1,
+                title: action.title,
+                desc: action.desc,
+              },
+            ],
+          });
+        }
         return newState;
       }
 
@@ -100,6 +157,7 @@
       );
 
       store.subscribe(article);
+      store.subscribe(TOC);
       TOC();
       control();
       article();
