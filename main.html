@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.1/redux.min.js"></script>
     <title>Redux CRUD</title>
   </head>
   <body>
@@ -21,16 +22,32 @@
       }
 
       function TOC() {
+        const state = store.getState();
+
         document.querySelector("#toc").innerHTML = `
         <nav>
-            <ol>
-                <li>
-                <a href="1.html">HTML</a>
-                </li>
-                <li><a href="2.html">CSS</a></li>
+            <ol class="list-action">
+                ${state.contents
+                  .map(
+                    (item) => `
+                    <li data-id=${item.id}>
+                        <a href=${item.id}>
+                            ${item.title}
+                        </a>
+                    </li>`,
+                  )
+                  .join("")}
             </ol>
         </nav>
           `;
+
+        document
+          .querySelector(".list-action")
+          .addEventListener("click", (event) => {
+            event.preventDefault();
+            const id = event.target.closest("li").dataset.id;
+            store.dispatch({ type: "SELECT", id });
+          });
       }
 
       function control() {
@@ -50,7 +67,34 @@
         </article>
           `;
       }
-      subject();
+
+      function reducer(state, action) {
+        if (state === undefined) {
+          return {
+            selected_id: null,
+            contents: [
+              { id: 1, title: "HTML", desc: "HTML is..." },
+              { id: 2, title: "CSS", desc: "CSS is..." },
+            ],
+          };
+        }
+
+        let newState;
+
+        if (action.type === "SELECT") {
+          newState = Object.assign({}, state, {
+            selected_id: action.id,
+          });
+        }
+        return newState;
+      }
+
+      const store = Redux.createStore(
+        reducer,
+        window.__REDUX_DEVTOOLS_EXTENSION__ &&
+          window.__REDUX_DEVTOOLS_EXTENSION__(),
+      );
+
       TOC();
       control();
       article();
