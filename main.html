@@ -52,7 +52,7 @@
 
       function control() {
         document.querySelector("#control").innerHTML = `
-        <ul>
+        <ul class="control_container">
             <li><a href="/create">create</a></li>
             <li><button>delete</button></li>
         </ul>
@@ -60,10 +60,14 @@
       }
 
       function article() {
+        const state = store.getState();
+        const [{ title, desc }] = state.contents.filter(
+          (value) => value.id === Number(state.selected_id),
+        );
         document.querySelector("#article").innerHTML = `
         <article>
-            <h2>HTML</h2>
-            HTML is...
+            <h2>${title}</h2>
+            ${desc}
         </article>
           `;
       }
@@ -71,7 +75,7 @@
       function reducer(state, action) {
         if (state === undefined) {
           return {
-            selected_id: null,
+            selected_id: 1,
             contents: [
               { id: 1, title: "HTML", desc: "HTML is..." },
               { id: 2, title: "CSS", desc: "CSS is..." },
@@ -95,6 +99,7 @@
           window.__REDUX_DEVTOOLS_EXTENSION__(),
       );
 
+      store.subscribe(article);
       TOC();
       control();
       article();
