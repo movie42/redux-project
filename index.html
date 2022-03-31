@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .container {
+        border: 5px solid black;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="red"></div>
+    <div id="green"></div>
+    <script>
+      function red() {
+        document.querySelector("#red").innerHTML = `
+                <div class="container" id="component_red">
+                    <h1>빨강</h1>
+                    <button onClick="
+                        document.querySelector('#component_red').style.backgroundColor = 'red';
+                    ">버튼</button>
+                </div>
+            `;
+      }
+      red();
+      function green() {
+        document.querySelector("#green").innerHTML = `
+                <div class="container" id="component_green">
+                    <h1>초록</h1>
+                    <button onClick="
+                        document.querySelector('#component_green').style.backgroundColor = 'green';
+                    ">버튼</button>
+                </div>
+            `;
+      }
+      green();
+    </script>
+  </body>
+</html>
