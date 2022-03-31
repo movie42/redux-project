@@ -64,3 +64,7 @@ function reducer(state, action) {
 ```
 
 새로운 state를 반환할 때는 original state를 복제한 다음 해당 값을 덮어쓰기하거나 삭제하는 방법으로 로직을 작성하는것이 좋다. 그래야 redux에서 시간여행이 가능해진다고 한다. state를 복제할 때는 Object.assign()을 사용한다.
+
+불변(immutable)
+
+원본은 불변해야한다. 각각의 데이터는 독립적이어야한다.
