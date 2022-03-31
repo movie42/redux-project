@@ -66,6 +66,10 @@
             if (e.target.nodeName === "A") {
               store.dispatch({ type: "CHANGE_MODE", mode: "CREATE" });
             }
+
+            if (e.target.nodeName === "BUTTON") {
+              store.dispatch({ type: "DELETE" });
+            }
           });
       }
 
@@ -73,9 +77,21 @@
         const state = store.getState();
 
         if (state.mode === "READ") {
+          const selectItem = state.selected_id;
+
+          if (selectItem === null) {
+            document.querySelector("#article").innerHTML = `
+            <article>
+                <h1>표시할 내용이 없습니다.</h1>
+            </article
+            `;
+            return;
+          }
+
           const [{ title, desc }] = state.contents.filter(
-            (value) => value.id === Number(state.selected_id),
+            (value) => value.id === Number(selectItem),
           );
+
           document.querySelector("#article").innerHTML = `
         <article>
             <h2>${title}</h2>
@@ -147,6 +163,19 @@
             ],
           });
         }
+
+        if (action.type === "DELETE") {
+          newState = Object.assign({}, state, {
+            contents: state.contents.filter(
+              (item) => item.id !== Number(state.selected_id),
+            ),
+            selected_id:
+              state.contents.length === 1 || state.selected_id === 1
+                ? (state.selected_id = null)
+                : state.contents[0].id,
+          });
+        }
+
         return newState;
       }
 
